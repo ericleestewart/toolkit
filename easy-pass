@@ -1,0 +1,95 @@
+#!/usr/bin/env python
+
+# Import modules
+import sys, getopt, random
+
+help = __file__+' [options] size\n'
+help += '  -d,--delimiter: Segment delimiter\n'
+help += '  -c,--common-only: No special characters'
+
+def main(argv):
+
+    # Define assets.
+    delimiter = '-'
+    special_characters = True
+    size = 10
+
+    patterns = {
+        0:'',
+        1:'•',
+        2:'••',
+        3:'•••',
+        4:'••••',
+        5:'••-••',
+        6:'•••-••',
+        7:'•••-•••',
+        8:'••••-•••',
+        9:'••••-••••',
+        10:'••••-•••••',
+    }
+
+    base_pattern = '••••-••••-'
+
+    normal_chars_list = [
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+        'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+        'u', 'v', 'w', 'x', 'y', 'z',
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+        'U', 'V', 'W', 'X', 'Y', 'Z',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    ]
+    special_chars_list = [
+        '!', '@', '#', '$', '%', '&', '*', '+', '.', ','
+    ]
+    
+
+    # Process arguments and parameters.
+    try:
+        opts, args = getopt.getopt(argv,"cd:h",["common-only","delimiter=","help"])
+    except getopt.GetoptError:
+        print(help)
+        sys.exit(2)
+
+    if len(args) > 0:
+        size = int(args[0])
+
+    for opt, arg in opts:
+        if opt in ('-h', '--help'):
+            print(help)
+            sys.exit(0)
+        elif opt in ("-d", "--delimiter"):
+            delimiter = arg
+        elif opt in ("-c", "--common-only"):
+            special_characters = False
+
+    # Assemble the base pattern.
+    if size <= 10:
+        password = patterns[size]
+    elif size % 10 == 0:
+        password = (base_pattern * (size // 10 - 1)) + patterns[10]
+    else:
+        password = (base_pattern * (size // 10) + patterns[(size % 10)])
+
+    # Process the delimiter
+    if len(delimiter) == 0:
+        delimiter = '•'
+    if delimiter is not '-':
+        password = password.replace('-', delimiter)
+    
+    # Build character set.
+    if special_characters:
+        total_char_list = normal_chars_list + special_chars_list
+    else:
+        total_char_list = normal_chars_list
+
+    # Fill in with random characters.
+    while '•' in password:
+        password = password.replace('•', random.choice(total_char_list), 1)
+
+    # Finally, print the password.
+    print(password)
+
+# Run main if this is the top level script.
+if __name__ == "__main__":
+   main(sys.argv[1:])
