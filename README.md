@@ -1,3 +1,8 @@
 # Toolkit
 
-A collection of command line tools for common tasks.
+A collection of tools for developers.
+
+## To install executable tools run:
+```
+./install.sh
+```
